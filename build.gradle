@@ -26,3 +26,9 @@ tasks.withType(JavaCompile) {
     options.compilerArgs.add('-parameters')
     options.deprecation = true
 }
+
+processResources {
+    filesMatching('paper-plugin.yml') {
+        expand(version: project.version)
+    }
+}

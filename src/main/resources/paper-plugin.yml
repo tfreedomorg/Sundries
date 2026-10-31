@@ -1,0 +1,14 @@
+name: TFSundries
+version: '${version}'
+main: me.totalfreedom.sundries.TFSundries
+api-version: '26.2'
+description: Everyday player and admin commands for TotalFreedom.
+load: STARTUP
+authors:
+  - shrimp
+dependencies:
+  server:
+    TotalFreedomMod:
+      load: BEFORE
+      required: true
+      join-classpath: true
