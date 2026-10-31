@@ -11,7 +11,7 @@ import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportService;
 
-@Command(name = "tp", description = "Teleport to a player.", usage = "/tp <player> [target]", aliases = {"teleport", "tp2p"})
+@Command(name = "tp", description = "Teleport to a player.", usage = "/tp <player> [target]", aliases = {"teleport", "tp2p", "tpo"})
 @Permission(permission = "tfm.player.tp", source = SourceType.ONLY_IN_GAME)
 public class Command_tp extends SundriesCommand
 {
