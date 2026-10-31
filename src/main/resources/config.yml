@@ -5,3 +5,5 @@ messages:
 
 teleport:
   invulnerability_seconds: 4
+
+back_on_death: true

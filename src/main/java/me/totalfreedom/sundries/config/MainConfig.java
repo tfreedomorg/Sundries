@@ -42,6 +42,11 @@ public class MainConfig
         return plugin.getConfig().getInt(entry.getPath());
     }
 
+    public boolean getBoolean(ConfigEntry entry)
+    {
+        return plugin.getConfig().getBoolean(entry.getPath());
+    }
+
     private TextColor getColor(ConfigEntry entry)
     {
         final TextColor color = TextColor.fromHexString(plugin.getConfig().getString(entry.getPath()));

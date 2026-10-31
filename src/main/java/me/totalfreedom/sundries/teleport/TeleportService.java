@@ -11,7 +11,10 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 
@@ -22,6 +25,8 @@ import me.totalfreedom.sundries.sql.SundriesDatabase;
 import me.totalfreedom.sundries.util.FLog;
 import me.totalfreedom.totalfreedommod.FreedomService;
 import me.totalfreedom.totalfreedommod.sql.PersistenceQueue;
+
+import reactor.core.publisher.Mono;
 
 public class TeleportService extends FreedomService
 {
@@ -38,6 +43,7 @@ public class TeleportService extends FreedomService
     private final PersistenceQueue writes = new PersistenceQueue("teleport");
     private final Set<UUID> teleportDisabled = new HashSet<>();
     private final Map<UUID, Long> invulnerableUntil = new HashMap<>();
+    private final Map<UUID, StoredLocation> lastLocations = new HashMap<>();
 
     public TeleportService(FreedomAPI plugin, MainConfig config, SundriesDatabase database)
     {
@@ -67,6 +73,7 @@ public class TeleportService extends FreedomService
         writes.await(SAVE_TIMEOUT_MILLIS);
         teleportDisabled.clear();
         invulnerableUntil.clear();
+        lastLocations.clear();
     }
 
     public boolean isTeleportEnabled(UUID uuid)
@@ -82,7 +89,46 @@ public class TeleportService extends FreedomService
             teleportDisabled.add(uuid);
 
         writes.enqueue(repository.setDisabled(uuid, !enabled)
-                                 .doOnError(ex -> FLog.error("Could not save the teleport setting for %s: %s", uuid, ex.getMessage())));
+                                  .onErrorResume(ex ->
+                                  {
+                                    FLog.error("Could not save the teleport setting for %s: %s", uuid, ex.getMessage());
+                                    return Mono.empty();
+                                  }));
+    }
+
+    /**
+     * @return Where {@code uuid} last teleported from or died, if that's known and its world is loaded.
+     */
+    public Optional<Location> getLastLocation(UUID uuid)
+    {
+        return Optional.ofNullable(lastLocations.get(uuid))
+                       .flatMap(StoredLocation::toLocation);
+    }
+
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        final UUID uuid = event.getPlayer().getUniqueId();
+
+        // putIfAbsent, because a teleport made while this loads is newer than the stored row
+        plugin.database().readAsync("TFSundries/loadLastLocation", repository.loadLastLocation(uuid),
+                stored -> stored.filter(ignored -> server.getPlayer(uuid) != null)
+                                .ifPresent(location -> lastLocations.putIfAbsent(uuid, location)),
+                () -> {});
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerDeath(PlayerDeathEvent event)
+    {
+        if (config.getBoolean(ConfigEntry.TELEPORT_BACK_ON_DEATH))
+            recordLastLocation(event.getPlayer().getUniqueId(), event.getPlayer().getLocation());
+    }
+
+    @EventHandler
+    public void onPlayerQuid(PlayerQuitEvent event)
+    {
+        invulnerableUntil.remove(event.getPlayer().getUniqueId());
+        lastLocations.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -107,7 +153,15 @@ public class TeleportService extends FreedomService
             player.eject();
             final long invulnerableMillis = TimeUnit.SECONDS.toMillis(config.getInteger(ConfigEntry.TELEPORT_INVULNERABILITY_SECONDS));
             invulnerableUntil.put(player.getUniqueId(), System.currentTimeMillis() + invulnerableMillis);
-            return player.teleportAsync(landing.get(), TeleportCause.COMMAND);
+            
+            final Location origin = player.getLocation();
+            return player.teleportAsync(landing.get(), TeleportCause.COMMAND).thenApply(teleported ->
+            {
+                if (teleported)
+                    recordLastLocation(player.getUniqueId(), origin);
+
+                return teleported;
+            });
         });
     }
 
@@ -122,6 +176,19 @@ public class TeleportService extends FreedomService
     public void onPlayerQuit(PlayerQuitEvent event)
     {
         invulnerableUntil.remove(event.getPlayer().getUniqueId());
+    }
+
+    private void recordLastLocation(UUID uuid, Location location)
+    {
+        final StoredLocation stored = StoredLocation.of(location);
+        lastLocations.put(uuid, stored);
+
+        writes.enqueue(repository.saveLastLocation(uuid, stored)
+                                 .onErrorResume(ex ->
+                                 {
+                                    FLog.error("Could not save the last location for %s: %s", uuid, ex.getMessage());
+                                    return Mono.empty();
+                                 }));
     }
 
     private boolean isInvulnerable(Player player)
