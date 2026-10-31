@@ -10,7 +10,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportService;
-import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
 @Command(name = "tp", description = "Teleport to a player.", usage = "/tp <player> [target]", aliases = {"teleport", "tp2p"})
 @Permission(permission = "tfm.player.tp", source = SourceType.ONLY_IN_GAME)
@@ -34,6 +33,14 @@ public class Command_tp extends SundriesCommand
         if (!plugin().vanish().canSee(sender, target))
         {
             sender.sendMessage(PLAYER_NOT_FOUND);
+            return;
+        }
+
+        if (!isAdmin(sender)
+                && !sender.equals(target)
+                && !services().require(TeleportService.class).isTeleportEnabled(target.getUniqueId()))
+        {
+            msg(sender, "<red>That player has teleportation disabled.");
             return;
         }
 
@@ -64,16 +71,5 @@ public class Command_tp extends SundriesCommand
                       else
                           msg(sender, "<red>Could not teleport there safely.");
                   });
-    }
-
-    private List<String> visibleNames(CommandSender sender, String partial)
-    {
-        return FuzzyMatch.filter(
-                plugin().vanish().visiblePlayersFor(sender)
-                        .stream()
-                        .map(Player::getName)
-                        .sorted()
-                        .toList(),
-                partial);
     }
 }

@@ -18,6 +18,8 @@ repositories {
 dependencies {
     compileOnly 'io.papermc.paper:paper-api:26.2.build.111-stable'
     compileOnly files(tfmJar)
+    compileOnly 'com.zaxxer:HikariCP:6.3.0'
+    compileOnly 'io.projectreactor:reactor-core:3.8.3'
 }
 
 tasks.withType(JavaCompile) {

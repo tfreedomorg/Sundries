@@ -1,5 +1,6 @@
 package me.totalfreedom.sundries.teleport;
 
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -17,10 +18,14 @@ import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import me.totalfreedom.api.FreedomAPI;
 import me.totalfreedom.sundries.config.ConfigEntry;
 import me.totalfreedom.sundries.config.MainConfig;
+import me.totalfreedom.sundries.sql.SundriesDatabase;
+import me.totalfreedom.sundries.util.FLog;
 import me.totalfreedom.totalfreedommod.FreedomService;
+import me.totalfreedom.totalfreedommod.sql.PersistenceQueue;
 
 public class TeleportService extends FreedomService
 {
+    private static final long SAVE_TIMEOUT_MILLIS = 5000L;
     private static final Set<Material> UNSAFE_SPACE = Set.of(
             Material.LAVA, Material.FIRE, Material.SOUL_FIRE, Material.SWEET_BERRY_BUSH, Material.COBWEB,
             Material.POWDER_SNOW, Material.WITHER_ROSE, Material.NETHER_PORTAL,
@@ -29,21 +34,55 @@ public class TeleportService extends FreedomService
             Material.CACTUS, Material.MAGMA_BLOCK, Material.CAMPFIRE, Material.SOUL_CAMPFIRE);
 
     private final MainConfig config;
+    private final TeleportRepository repository;
+    private final PersistenceQueue writes = new PersistenceQueue("teleport");
+    private final Set<UUID> teleportDisabled = new HashSet<>();
     private final Map<UUID, Long> invulnerableUntil = new HashMap<>();
 
-    public TeleportService(FreedomAPI plugin, MainConfig config)
+    public TeleportService(FreedomAPI plugin, MainConfig config, SundriesDatabase database)
     {
         super(plugin);
         this.config = config;
+        this.repository = new TeleportRepository(database);
     }
 
     @Override
-    public void onStart() {}
+    public void onStart()
+    {
+        try
+        {
+            repository.createTable();
+            teleportDisabled.addAll(repository.loadDisabled());
+        }
+        catch (SQLException ex)
+        {
+            FLog.error("Could not load teleport settings, so /tptoggle won't be remembered.");
+            FLog.error(ex);
+        }
+    }
 
     @Override
     public void onStop()
     {
+        writes.await(SAVE_TIMEOUT_MILLIS);
+        teleportDisabled.clear();
         invulnerableUntil.clear();
+    }
+
+    public boolean isTeleportEnabled(UUID uuid)
+    {
+        return !teleportDisabled.contains(uuid);
+    }
+
+    public void setTeleportEnabled(UUID uuid, boolean enabled)
+    {
+        if (enabled)
+            teleportDisabled.remove(uuid);
+        else
+            teleportDisabled.add(uuid);
+
+        writes.enqueue(repository.setDisabled(uuid, !enabled)
+                                 .doOnError(ex -> FLog.error("Could not save the teleport setting for %s: %s", uuid, ex.getMessage())));
     }
 
     /**

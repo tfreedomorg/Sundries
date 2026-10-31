@@ -4,6 +4,7 @@ import me.totalfreedom.api.FreedomAPI;
 import me.totalfreedom.api.framework.IServiceManager;
 import me.totalfreedom.sundries.cmd.CommandLoader;
 import me.totalfreedom.sundries.config.MainConfig;
+import me.totalfreedom.sundries.sql.SundriesDatabase;
 import me.totalfreedom.sundries.teleport.TeleportService;
 import me.totalfreedom.totalfreedommod.framework.ServiceManager;
 
@@ -25,7 +26,9 @@ public class SundriesAggregate
         config = new MainConfig(plugin);
         config.load();
 
-        services.register(TeleportService.class, api -> new TeleportService(api, config));
+        final SundriesDatabase database = services.register(SundriesDatabase.class,
+                api -> new SundriesDatabase(api, plugin.getDataFolder()));
+        services.register(TeleportService.class, api -> new TeleportService(api, config, database));
         services.register(CommandLoader.class, CommandLoader::new);
 
         services.start();
