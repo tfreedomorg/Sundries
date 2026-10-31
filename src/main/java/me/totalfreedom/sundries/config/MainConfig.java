@@ -6,7 +6,7 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
-import me.totalfreedom.totalfreedommod.util.FLog;
+import me.totalfreedom.sundries.util.FLog;
 
 public class MainConfig
 {

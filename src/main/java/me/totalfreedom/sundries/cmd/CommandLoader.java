@@ -1,8 +1,8 @@
 package me.totalfreedom.sundries.cmd;
 
 import me.totalfreedom.api.FreedomAPI;
+import me.totalfreedom.sundries.util.FLog;
 import me.totalfreedom.totalfreedommod.FreedomService;
-import me.totalfreedom.totalfreedommod.util.FLog;
 
 public class CommandLoader extends FreedomService
 {

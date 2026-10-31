@@ -5,10 +5,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import me.totalfreedom.api.PluginProvider;
 import me.totalfreedom.api.framework.IServiceManager;
 import me.totalfreedom.sundries.config.MainConfig;
+import me.totalfreedom.sundries.util.FLog;
 
 public class TFSundries extends JavaPlugin
 {
     private SundriesAggregate aggregate;
+
+    @Override
+    public void onLoad()
+    {
+        FLog.setPluginLogger(getSLF4JLogger());
+    }
 
     @Override
     public void onEnable()
