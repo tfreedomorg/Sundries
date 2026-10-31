@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(project.property('javaVersion') as int)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url 'https://repo.papermc.io/repository/maven-public/'
+    }
+}
+
+dependencies {
+    compileOnly 'io.papermc.paper:paper-api:26.2.build.111-stable'
+    compileOnly files(tfmJar)
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+    options.release = project.property('javaVersion') as int
+    options.compilerArgs.add('-parameters')
+    options.deprecation = true
+}
