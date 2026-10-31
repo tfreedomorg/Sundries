@@ -6,18 +6,18 @@ import me.totalfreedom.totalfreedommod.util.FLog;
 
 public class CommandLoader extends FreedomService
 {
-	public CommandLoader(FreedomAPI plugin)
-	{
-		super(plugin);
-	}
+    public CommandLoader(FreedomAPI plugin)
+    {
+        super(plugin);
+    }
 
-	@Override
-	public void onStart()
-	{
-		final int loaded = plugin.commands().load(Command_tp.class);
-		FLog.info("Loaded %d commands.", loaded);
-	}
+    @Override
+    public void onStart()
+    {
+        final int loaded = plugin.commands().load(Command_tp.class);
+        FLog.info("Loaded %d commands.", loaded);
+    }
 
-	@Override
-	public void onStop() {}
+    @Override
+    public void onStop() {}
 }

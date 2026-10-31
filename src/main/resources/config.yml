@@ -1,0 +1,7 @@
+messages:
+  # Hex colors, in quotes (YAML treats an unquoted # as a comment)!
+  success_color: '#24d169'
+  highlight_color: '#2a92c9'
+
+teleport:
+  invulnerability_seconds: 4
