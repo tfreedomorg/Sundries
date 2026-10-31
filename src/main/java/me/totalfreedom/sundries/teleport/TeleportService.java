@@ -42,6 +42,7 @@ public class TeleportService extends FreedomService
     private final TeleportRepository repository;
     private final PersistenceQueue writes = new PersistenceQueue("teleport");
     private final Set<UUID> teleportDisabled = new HashSet<>();
+    private final Set<UUID> autoAccept = new HashSet<>();
     private final Map<UUID, Long> invulnerableUntil = new HashMap<>();
     private final Map<UUID, StoredLocation> lastLocations = new HashMap<>();
 
@@ -59,6 +60,7 @@ public class TeleportService extends FreedomService
         {
             repository.createTable();
             teleportDisabled.addAll(repository.loadDisabled());
+            autoAccept.addAll(repository.loadAutoAccept());
         }
         catch (SQLException ex)
         {
@@ -74,6 +76,7 @@ public class TeleportService extends FreedomService
         teleportDisabled.clear();
         invulnerableUntil.clear();
         lastLocations.clear();
+        autoAccept.clear();
     }
 
     public boolean isTeleportEnabled(UUID uuid)
@@ -94,6 +97,26 @@ public class TeleportService extends FreedomService
                                     FLog.error("Could not save the teleport setting for %s: %s", uuid, ex.getMessage());
                                     return Mono.empty();
                                   }));
+    }
+
+    public boolean isAutoAccept(UUID uuid)
+    {
+        return autoAccept.contains(uuid);
+    }
+
+    public void setAutoAccept(UUID uuid, boolean enabled)
+    {
+        if (enabled)
+            autoAccept.add(uuid);
+        else
+            autoAccept.remove(uuid);
+
+        writes.enqueue(repository.setAutoAccept(uuid, enabled)
+                                 .onErrorResume(ex ->
+                                 {
+                                    FLog.error("Could not save the auto-accept setting for %s: %s", uuid, ex.getMessage());
+                                    return Mono.empty();
+                                 }));
     }
 
     /**

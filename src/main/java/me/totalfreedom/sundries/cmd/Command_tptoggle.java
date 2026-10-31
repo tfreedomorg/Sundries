@@ -47,5 +47,13 @@ public class Command_tptoggle extends SundriesCommand
         success(sender, message,
                 Placeholder.unparsed("state", enabled ? "enabled" : "disabled"),
                 Placeholder.unparsed("target", target.getName()));
+
+        if (!target.equals(sender))
+            success(target, enabled
+                    ? "<success>An admin changed your <highlight>/tptoggle</highlight>: players can now teleport to you."
+                    : "<success>An admin changed your <highlight>/tptoggle</highlight>: players can no longer teleport to you.");
+
+        if (!enabled && teleports.isAutoAccept(target.getUniqueId()))
+            success(target, "<success>Auto-accept is paused until players can teleport to you again.");
     }
 }

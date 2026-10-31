@@ -25,6 +25,7 @@ public class TeleportRepository
             statement.execute("CREATE TABLE IF NOT EXISTS teleport_disabled (uuid TEXT PRIMARY KEY)");
             statement.execute("CREATE TABLE IF NOT EXISTS last_location (uuid TEXT PRIMARY KEY, world TEXT NOT NULL, "
                     + "x REAL NOT NULL, y REAL NOT NULL, z REAL NOT NULL, yaw REAL NOT NULL, pitch REAL NOT NULL)");
+            statement.execute("CREATE TABLE IF NOT EXISTS teleport_auto_accept (uuid TEXT PRIMARY KEY)");
         }
     }
 
@@ -98,6 +99,39 @@ public class TeleportRepository
                 statement.setDouble(5, location.z());
                 statement.setFloat(6, location.yaw());
                 statement.setFloat(7, location.pitch());
+                statement.executeUpdate();
+            }
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    public Set<UUID> loadAutoAccept() throws SQLException
+    {
+        final Set<UUID> autoAccept = new HashSet<>();
+
+        try (Connection connection = database.borrowConnection();
+             Statement statement = connection.createStatement();
+             ResultSet results = statement.executeQuery("SELECT uuid FROM teleport_auto_accept"))
+        {
+            while (results.next())
+                autoAccept.add(UUID.fromString(results.getString("uuid")));
+        }
+
+        return autoAccept;
+    }
+
+    public Mono<Void> setAutoAccept(UUID uuid, boolean autoAccept)
+    {
+        final String sql = autoAccept
+                ? "INSERT OR IGNORE INTO teleport_auto_accept (uuid) VALUES (?)"
+                : "DELETE FROM teleport_auto_accept WHERE uuid = ?";
+
+        return Mono.<Void>fromCallable(() ->
+        {
+            try (Connection connection = database.borrowConnection();
+                 PreparedStatement statement = connection.prepareStatement(sql))
+            {
+                statement.setString(1, uuid.toString());
                 statement.executeUpdate();
             }
             return null;
