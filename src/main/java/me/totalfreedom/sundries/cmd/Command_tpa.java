@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportRequestService;
@@ -43,6 +41,6 @@ public class Command_tpa extends TeleportRequestCommand
         }
 
         success(target, "<highlight><requester></highlight><success> wants to teleport to you. Use <highlight>/tpaccept</highlight> or <highlight>/tpdeny</highlight>.",
-                Placeholder.unparsed("requester", sender.getName()));
+                playerName("requester", sender));
     }
 }

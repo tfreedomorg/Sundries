@@ -46,7 +46,7 @@ public class Command_tptoggle extends SundriesCommand
 
         success(sender, message,
                 Placeholder.unparsed("state", enabled ? "enabled" : "disabled"),
-                Placeholder.unparsed("target", target.getName()));
+                playerName("target", target));
 
         if (!target.equals(sender))
             success(target, enabled

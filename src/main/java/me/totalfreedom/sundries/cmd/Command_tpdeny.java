@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportRequest;
@@ -47,6 +45,6 @@ public class Command_tpdeny extends SundriesCommand
 
         Optional.ofNullable(server().getPlayer(request.get().requester()))
                 .ifPresent(requester -> success(requester, "<highlight><receiver></highlight><success> denied your request.",
-                        Placeholder.unparsed("receiver", sender.getName())));
+                           playerName("receiver", sender)));
     }
 }

@@ -2,8 +2,6 @@ package me.totalfreedom.sundries.cmd;
 
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.sundries.teleport.TeleportRequestService;
 public abstract class TeleportRequestCommand extends SundriesCommand
 {
@@ -31,7 +29,7 @@ public abstract class TeleportRequestCommand extends SundriesCommand
         }
 
         success(sender, "<success>Request sent to <highlight><target></highlight>.",
-                Placeholder.unparsed("target", target.getName()));
+                playerName("target", target));
         return true;
     }
 }

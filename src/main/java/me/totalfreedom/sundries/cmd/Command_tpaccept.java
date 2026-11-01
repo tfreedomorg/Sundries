@@ -5,8 +5,6 @@ import java.util.Optional;
 
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportRequest;
@@ -63,7 +61,7 @@ public class Command_tpaccept extends SundriesCommand
 
                     success(sender, "<success>Request accepted.");
                     success(requester.get(), "<highlight><receiver></highlight><success> accepted your request.",
-                            Placeholder.unparsed("receiver", sender.getName()));
+                            playerName("receiver", sender));
                   });
     }
 }

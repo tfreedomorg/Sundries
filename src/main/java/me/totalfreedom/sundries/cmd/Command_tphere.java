@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportService;
@@ -30,7 +28,7 @@ public class Command_tphere extends SundriesCommand
                   {
                     if (teleported)
                         success(sender, "<success>Teleported <highlight><target></highlight> to you.",
-                                Placeholder.unparsed("target", target.getName()));
+                                playerName("target", target));
                     else
                         msg(sender, "<red>Could not teleport that player here.");
                   });

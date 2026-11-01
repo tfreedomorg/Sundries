@@ -7,8 +7,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportService;
@@ -49,13 +47,13 @@ public class Command_back extends SundriesCommand
 
         final String message = target.equals(sender)
                 ? "<success>Returned to your last location."
-                : "<success> Returned <highlight><target></highlight> to their last location.";
+                : "<success>Returned <highlight><target></highlight> to their last location.";
 
         teleports.teleport(target, lastLocation.get(), ignoreSafety)
                  .thenAccept(teleported ->
                  {
                     if (teleported)
-                        success(sender, message, Placeholder.unparsed("target", target.getName()));
+                        success(sender, message, playerName("target", target));
                     else
                         msg(sender, "<red>Could not teleport there safely.");
                  });

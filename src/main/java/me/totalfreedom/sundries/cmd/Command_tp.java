@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.sundries.teleport.TeleportService;
@@ -58,7 +56,7 @@ public class Command_tp extends SundriesCommand
     {
         final String message = subject.equals(sender)
                 ? "<success>Teleported to <highlight><destination></highlight>."
-                : "<success>Teleported <highlight><subject></highlight> to <highlight><destination></highlight>,";
+                : "<success>Teleported <highlight><subject></highlight> to <highlight><destination></highlight>.";
 
         services().require(TeleportService.class)
                   .teleport(subject, destination.getLocation(), ignoreSafety)
@@ -66,8 +64,8 @@ public class Command_tp extends SundriesCommand
                   {
                       if (teleported)
                           success(sender, message,
-                                  Placeholder.unparsed("subject", subject.getName()),
-                                  Placeholder.unparsed("destination", destination.getName()));
+                                  playerName("subject", subject),
+                                  playerName("destination", destination));
                       else
                           msg(sender, "<red>Could not teleport there safely.");
                   });
