@@ -26,6 +26,8 @@ public class TeleportRepository
             statement.execute("CREATE TABLE IF NOT EXISTS last_location (uuid TEXT PRIMARY KEY, world TEXT NOT NULL, "
                     + "x REAL NOT NULL, y REAL NOT NULL, z REAL NOT NULL, yaw REAL NOT NULL, pitch REAL NOT NULL)");
             statement.execute("CREATE TABLE IF NOT EXISTS teleport_auto_accept (uuid TEXT PRIMARY KEY)");
+            statement.execute("CREATE TABLE IF NOT EXISTS logout_location (uuid TEXT PRIMARY KEY, world TEXT NOT NULL, "
+                    + "x REAL NOT NULL, y REAL NOT NULL, z REAL NOT NULL, yaw REAL NOT NULL, pitch REAL NOT NULL)");
         }
     }
 
@@ -64,45 +66,22 @@ public class TeleportRepository
 
     public Mono<Optional<StoredLocation>> loadLastLocation(UUID uuid)
     {
-        return Mono.fromCallable(() ->
-        {
-            try (Connection connection = database.borrowConnection();
-                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM last_location WHERE uuid = ?"))
-            {
-                statement.setString(1, uuid.toString());
-
-                try (ResultSet results = statement.executeQuery())
-                {
-                    if (!results.next())
-                        return Optional.<StoredLocation>empty();
-
-                    return Optional.of(new StoredLocation(results.getString("world"),
-                            results.getDouble("x"), results.getDouble("y"), results.getDouble("z"),
-                            results.getFloat("yaw"), results.getFloat("pitch")));
-                }
-            }
-        }).subscribeOn(Schedulers.boundedElastic());
+        return loadLocation("last_location", uuid);
     }
 
     public Mono<Void> saveLastLocation(UUID uuid, StoredLocation location)
     {
-        return Mono.<Void>fromCallable(() ->
-        {
-            try (Connection connection = database.borrowConnection();
-                 PreparedStatement statement = connection.prepareStatement(
-                            "INSERT OR REPLACE INTO last_location (uuid, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)"))
-            {
-                statement.setString(1, uuid.toString());
-                statement.setString(2, location.world());
-                statement.setDouble(3, location.x());
-                statement.setDouble(4, location.y());
-                statement.setDouble(5, location.z());
-                statement.setFloat(6, location.yaw());
-                statement.setFloat(7, location.pitch());
-                statement.executeUpdate();
-            }
-            return null;
-        }).subscribeOn(Schedulers.boundedElastic());
+        return saveLocation("last_location", uuid, location);
+    }
+
+    public Mono<Optional<StoredLocation>> loadLogoutLocation(UUID uuid)
+    {
+        return loadLocation("logout_location", uuid);
+    }
+
+    public Mono<Void> saveLogoutLocation(UUID uuid, StoredLocation location)
+    {
+        return saveLocation("logout_location", uuid, location);
     }
 
     public Set<UUID> loadAutoAccept() throws SQLException
@@ -132,6 +111,49 @@ public class TeleportRepository
                  PreparedStatement statement = connection.prepareStatement(sql))
             {
                 statement.setString(1, uuid.toString());
+                statement.executeUpdate();
+            }
+            return null;
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private Mono<Optional<StoredLocation>> loadLocation(String table, UUID uuid)
+    {
+        return Mono.fromCallable(() ->
+        {
+            try (Connection connection = database.borrowConnection();
+                 PreparedStatement statement = connection.prepareStatement(String.format("SELECT * FROM %s WHERE uuid = ?", table)))
+            {
+                statement.setString(1, uuid.toString());
+
+                try (ResultSet results = statement.executeQuery())
+                {
+                    if (!results.next())
+                        return Optional.<StoredLocation>empty();
+
+                    return Optional.of(new StoredLocation(results.getString("world"),
+                            results.getDouble("x"), results.getDouble("y"), results.getDouble("z"),
+                            results.getFloat("yaw"), results.getFloat("pitch")));
+                }
+            }
+        }).subscribeOn(Schedulers.boundedElastic());
+    }
+
+    private Mono<Void> saveLocation(String table, UUID uuid, StoredLocation location)
+    {
+        return Mono.<Void>fromCallable(() ->
+        {
+            try (Connection connection = database.borrowConnection();
+                 PreparedStatement statement = connection.prepareStatement(String.format(
+                            "INSERT OR REPLACE INTO %s (uuid, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?)", table)))
+            {
+                statement.setString(1, uuid.toString());
+                statement.setString(2, location.world());
+                statement.setDouble(3, location.x());
+                statement.setDouble(4, location.y());
+                statement.setDouble(5, location.z());
+                statement.setFloat(6, location.yaw());
+                statement.setFloat(7, location.pitch());
                 statement.executeUpdate();
             }
             return null;

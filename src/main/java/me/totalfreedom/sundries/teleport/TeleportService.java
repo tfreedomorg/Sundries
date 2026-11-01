@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import org.bukkit.*;
@@ -130,6 +131,17 @@ public class TeleportService extends FreedomService
                        .flatMap(StoredLocation::toLocation);
     }
 
+    /**
+     * Looks up where {@code uuid} last logged out, then hands it to {@code callback} on the main
+     * thread. It's empty if that isn't known or its world isn't loaded.
+     */
+    public void findLogoutLocation(UUID uuid, Consumer<Optional<Location>> callback)
+    {
+        plugin.database().readAsync("TFSundries/loadLogoutLocation", repository.loadLogoutLocation(uuid),
+                stored -> callback.accept(stored.flatMap(StoredLocation::toLocation)),
+                () -> callback.accept(Optional.empty()));
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
@@ -187,7 +199,15 @@ public class TeleportService extends FreedomService
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event)
     {
-        invulnerableUntil.remove(event.getPlayer().getUniqueId());
+        final UUID uuid = event.getPlayer().getUniqueId();
+        invulnerableUntil.remove(uuid);
+
+        writes.enqueue(repository.saveLogoutLocation(uuid, StoredLocation.of(event.getPlayer().getLocation()))
+                                 .onErrorResume(ex ->
+                                 {
+                                    FLog.error("Could not save the logout location for %s: %s", uuid, ex.getMessage());
+                                    return Mono.empty();
+                                 }));
     }
 
     private void recordLastLocation(UUID uuid, Location location)
