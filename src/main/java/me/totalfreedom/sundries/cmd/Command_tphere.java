@@ -27,8 +27,14 @@ public class Command_tphere extends SundriesCommand
                   .thenAccept(teleported ->
                   {
                     if (teleported)
+                    {
                         success(sender, "<success>Teleported <highlight><target></highlight> to you.",
                                 playerName("target", target));
+                        success(target, plugin().vanish().canSee(target, sender)
+                                ? "<success>You were teleported to <highlight><teleporter></highlight>."
+                                : "<success>An admin teleported you to them.",
+                                playerName("teleporter", sender));
+                    }
                     else
                         msg(sender, "<red>Could not teleport that player here.");
                   });
