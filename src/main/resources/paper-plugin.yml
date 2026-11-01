@@ -6,6 +6,7 @@ description: Everyday player and admin commands for TotalFreedom.
 load: STARTUP
 authors:
   - shroomp
+  - speednt
 dependencies:
   server:
     TotalFreedomMod:
