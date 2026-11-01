@@ -17,13 +17,13 @@ import me.totalfreedom.totalfreedommod.framework.ServiceManager;
 
 public class SundriesAggregate
 {
-    private final TFSundries plugin;
+    private final Sundries plugin;
     private final ServiceManager services;
 
     private BuildInfo buildInfo;
     private MainConfig config;
 
-    public SundriesAggregate(TFSundries plugin, FreedomAPI api)
+    public SundriesAggregate(Sundries plugin, FreedomAPI api)
     {
         this.plugin = plugin;
         this.services = new ServiceManager(api);

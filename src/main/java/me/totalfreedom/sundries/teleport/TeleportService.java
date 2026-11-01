@@ -137,7 +137,7 @@ public class TeleportService extends FreedomService
      */
     public void findLogoutLocation(UUID uuid, Consumer<Optional<Location>> callback)
     {
-        plugin.database().readAsync("TFSundries/loadLogoutLocation", repository.loadLogoutLocation(uuid),
+        plugin.database().readAsync("Sundries/loadLogoutLocation", repository.loadLogoutLocation(uuid),
                 stored -> callback.accept(stored.flatMap(StoredLocation::toLocation)),
                 () -> callback.accept(Optional.empty()));
     }
@@ -286,7 +286,7 @@ public class TeleportService extends FreedomService
     private void loadLastLocation(UUID uuid)
     {
         // putIfAbsent, because a teleport made while this loads is newer than the stored row
-        plugin.database().readAsync("TFSundries/loadLastLocation", repository.loadLastLocation(uuid),
+        plugin.database().readAsync("Sundries/loadLastLocation", repository.loadLastLocation(uuid),
                 stored -> stored.filter(ignored -> server.getPlayer(uuid) != null)
                                 .ifPresent(location -> lastLocations.putIfAbsent(uuid, location)),
                 () -> {});

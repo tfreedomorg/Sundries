@@ -31,7 +31,7 @@ public class SundriesDatabase extends FreedomService
         final HikariConfig config = new HikariConfig();
         config.setJdbcUrl(String.format("jdbc:sqlite:%s", new File(dataFolder, FILENAME).getPath()));
         config.setDriverClassName("org.sqlite.JDBC");
-        config.setPoolName("TFSundries-SQLite");
+        config.setPoolName("Sundries-SQLite");
         config.setMaximumPoolSize(1);
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(0);
@@ -58,7 +58,7 @@ public class SundriesDatabase extends FreedomService
     public Connection borrowConnection() throws SQLException
     {
         if (dataSource == null)
-            throw new SQLException("The TFSundries database is not connected.");
+            throw new SQLException("The Sundries database is not connected.");
 
         return dataSource.getConnection();
     }
