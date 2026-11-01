@@ -1,5 +1,7 @@
 package me.totalfreedom.sundries.config;
 
+import java.util.List;
+
 import org.bukkit.plugin.java.JavaPlugin;
 
 import net.kyori.adventure.text.format.TextColor;
@@ -45,6 +47,11 @@ public class MainConfig
     public boolean getBoolean(ConfigEntry entry)
     {
         return plugin.getConfig().getBoolean(entry.getPath());
+    }
+
+    public List<String> getStringList(ConfigEntry entry)
+    {
+        return plugin.getConfig().getStringList(entry.getPath());
     }
 
     private TextColor getColor(ConfigEntry entry)

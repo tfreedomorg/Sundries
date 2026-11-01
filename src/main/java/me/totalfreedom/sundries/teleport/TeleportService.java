@@ -219,7 +219,7 @@ public class TeleportService extends FreedomService
      * Searches outward from the destination's height, so the closest safe spot wins whether it's
      * above or below.
      */
-    private static Optional<Location> findSafeLanding(Location destination)
+    static Optional<Location> findSafeLanding(Location destination)
     {
         final World world = destination.getWorld();
         final int startY = destination.getBlockY();
