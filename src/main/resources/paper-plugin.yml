@@ -5,7 +5,7 @@ api-version: '26.2'
 description: Everyday player and admin commands for TotalFreedom.
 load: STARTUP
 authors:
-  - shrimp
+  - shroomp
 dependencies:
   server:
     TotalFreedomMod:

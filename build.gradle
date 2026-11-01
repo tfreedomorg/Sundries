@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'com.gorylenko.gradle-git-properties' version '2.5.7'
 }
 
 java {
@@ -29,7 +30,48 @@ tasks.withType(JavaCompile) {
     options.deprecation = true
 }
 
+gitProperties {
+    dateFormat = 'yyyy-MM-dd HH:mm:ss'
+    failOnNoGitDirectory = true
+    gitPropertiesResourceDir = file("${projectDir}/src/main/resources")
+    keys = [
+        'git.commit.id',
+        'git.commit.id.abbrev'
+    ]
+    gitPropertiesName = 'git.properties'
+}
+
+task addBuildTimeToGitProperties {
+    dependsOn generateGitProperties
+    doLast {
+        def gitPropsFile = file("${projectDir}/src/main/resources/git.properties")
+        if (gitPropsFile.exists()) {
+            def props = new Properties()
+            props.load(new FileInputStream(gitPropsFile))
+
+            def dateFormat = new java.text.SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+            props.setProperty('git.build.time', dateFormat.format(new Date()))
+
+            def writer = new FileWriter(gitPropsFile)
+            props.store(writer, null)
+            writer.close()
+        }
+    }
+}
+
 processResources {
+    dependsOn addBuildTimeToGitProperties
+    filteringCharset = 'UTF-8'
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+    filesMatching('build.properties') {
+        expand(
+            buildAuthor: project.findProperty('buildAuthor') ?: 'TotalFreedom',
+            buildCodeName: project.findProperty('buildCodeName') ?: 'Unnamed',
+            buildVersion: project.version
+        )
+    }
+
     filesMatching('paper-plugin.yml') {
         expand(version: project.version)
     }

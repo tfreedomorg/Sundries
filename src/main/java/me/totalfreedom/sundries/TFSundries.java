@@ -2,6 +2,7 @@ package me.totalfreedom.sundries;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
+import me.totalfreedom.api.BuildInfo;
 import me.totalfreedom.api.PluginProvider;
 import me.totalfreedom.api.framework.IServiceManager;
 import me.totalfreedom.sundries.config.MainConfig;
@@ -39,5 +40,10 @@ public class TFSundries extends JavaPlugin
     public MainConfig config()
     {
         return aggregate.config();
+    }
+
+    public BuildInfo buildInfo()
+    {
+        return aggregate.buildInfo();
     }
 }

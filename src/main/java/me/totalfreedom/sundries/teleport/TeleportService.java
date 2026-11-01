@@ -67,6 +67,8 @@ public class TeleportService extends FreedomService
             FLog.error("Could not load teleport settings, so /tptoggle won't be remembered.");
             FLog.error(ex);
         }
+        // Only matters on a reload, since it cleared the locations of everyone still online
+        server.getOnlinePlayers().forEach(player -> loadLastLocation(player.getUniqueId()));
     }
 
     @Override
@@ -131,13 +133,7 @@ public class TeleportService extends FreedomService
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event)
     {
-        final UUID uuid = event.getPlayer().getUniqueId();
-
-        // putIfAbsent, because a teleport made while this loads is newer than the stored row
-        plugin.database().readAsync("TFSundries/loadLastLocation", repository.loadLastLocation(uuid),
-                stored -> stored.filter(ignored -> server.getPlayer(uuid) != null)
-                                .ifPresent(location -> lastLocations.putIfAbsent(uuid, location)),
-                () -> {});
+        loadLastLocation(event.getPlayer().getUniqueId());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -145,13 +141,6 @@ public class TeleportService extends FreedomService
     {
         if (config.getBoolean(ConfigEntry.TELEPORT_BACK_ON_DEATH))
             recordLastLocation(event.getPlayer().getUniqueId(), event.getPlayer().getLocation());
-    }
-
-    @EventHandler
-    public void onPlayerQuid(PlayerQuitEvent event)
-    {
-        invulnerableUntil.remove(event.getPlayer().getUniqueId());
-        lastLocations.remove(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -272,5 +261,14 @@ public class TeleportService extends FreedomService
         final Location moved = location.clone();
         moved.setY(y);
         return moved;
+    }
+
+    private void loadLastLocation(UUID uuid)
+    {
+        // putIfAbsent, because a teleport made while this loads is newer than the stored row
+        plugin.database().readAsync("TFSundries/loadLastLocation", repository.loadLastLocation(uuid),
+                stored -> stored.filter(ignored -> server.getPlayer(uuid) != null)
+                                .ifPresent(location -> lastLocations.putIfAbsent(uuid, location)),
+                () -> {});
     }
 }
