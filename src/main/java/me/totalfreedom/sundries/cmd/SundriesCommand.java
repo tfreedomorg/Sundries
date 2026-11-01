@@ -16,7 +16,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import me.totalfreedom.api.cmd.FCommand;
 import me.totalfreedom.api.framework.IServiceManager;
-import me.totalfreedom.sundries.TFSundries;
+import me.totalfreedom.sundries.Sundries;
 import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
 public abstract class SundriesCommand extends FCommand
@@ -54,9 +54,9 @@ public abstract class SundriesCommand extends FCommand
         return Placeholder.component(key, Component.text(player.getName()).color(teamColor(player).orElse(null)));
     }
 
-    protected final TFSundries sundries()
+    protected final Sundries sundries()
     {
-        return JavaPlugin.getPlugin(TFSundries.class);
+        return JavaPlugin.getPlugin(Sundries.class);
     }
 
     private Optional<TextColor> teamColor(Player player)

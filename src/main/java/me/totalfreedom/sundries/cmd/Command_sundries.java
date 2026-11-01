@@ -8,9 +8,9 @@ import me.totalfreedom.api.BuildInfo;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.totalfreedommod.config.ConfigEntry;
 
-@Command(name = "tfsundries", description = "Shows information about TFSundries or reloads it", usage = "/tfsundries [reload]", aliases = {"tfs"})
+@Command(name = "sundries", description = "Shows information about Sundries or reloads it", usage = "/sundries [reload]", aliases = {"tfs"})
 @Permission(permission = "tfm.server.info")
-public class Command_tfsundries extends SundriesCommand
+public class Command_sundries extends SundriesCommand
 {
     @Subcommand("reload")
     @Permission(permission = "tfm.server.reload")
@@ -41,12 +41,12 @@ public class Command_tfsundries extends SundriesCommand
         success(
             sender,
             """
-            <success>TFSundries for 'Total Freedom', the original all-op server.
+            <success>Sundries for 'Total Freedom', the original all-op server.
             Running on <highlight><server></highlight>.
             Created by <highlight><authors></highlight>.
             Version <highlight><version></highlight>
             Compiled <highlight><date></highlight> by <highlight><author></highlight>
-            Visit <highlight>https://github.com/tfreedomorg/TFSundries</highlight> for more information.\
+            Visit <highlight>https://github.com/tfreedomorg/Sundries</highlight> for more information.\
             """,
             Placeholder.unparsed("server", ConfigEntry.SERVER_NAME.getString()),
             Placeholder.unparsed("authors", String.join(", ", sundries().getPluginMeta().getAuthors())),

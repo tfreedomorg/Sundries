@@ -8,7 +8,7 @@ import me.totalfreedom.api.framework.IServiceManager;
 import me.totalfreedom.sundries.config.MainConfig;
 import me.totalfreedom.sundries.util.FLog;
 
-public class TFSundries extends JavaPlugin
+public class Sundries extends JavaPlugin
 {
     private SundriesAggregate aggregate;
 

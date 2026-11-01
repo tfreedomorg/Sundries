@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class FLog
 {
-    private static Logger pluginLogger = LoggerFactory.getLogger("TFSundries");
+    private static Logger pluginLogger = LoggerFactory.getLogger("Sundries");
 
     private FLog() {}
 

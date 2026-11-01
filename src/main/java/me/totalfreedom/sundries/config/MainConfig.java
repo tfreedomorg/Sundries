@@ -61,7 +61,7 @@ public class MainConfig
         if (color != null)
             return color;
 
-        FLog.warn("Invalid color at %s in the TFSundries config; using the default.", entry.getPath());
+        FLog.warn("Invalid color at %s in the Sundries config; using the default.", entry.getPath());
         return TextColor.fromHexString(plugin.getConfig().getDefaults().getString(entry.getPath()));
     }
 }

@@ -1,6 +1,6 @@
-name: TFSundries
+name: Sundries
 version: '${version}'
-main: me.totalfreedom.sundries.TFSundries
+main: me.totalfreedom.sundries.Sundries
 api-version: '26.2'
 description: Everyday player and admin commands for TotalFreedom.
 load: STARTUP
