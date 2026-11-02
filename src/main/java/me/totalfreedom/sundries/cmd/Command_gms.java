@@ -1,18 +1,18 @@
 package me.totalfreedom.sundries.cmd;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
+
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.Callback;
 import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 @Command(name = "gms",
         description = "Quickly change your own gamemode to survival, or define someone's username to change theirs.",
-        usage = "/gms <-a | [player]>",
+        usage = "/gms <-a | [name]>",
         aliases = {"survival"}
 )
 @Permission(permission = "tfm.player.survival")
@@ -27,10 +27,10 @@ public class Command_gms extends SundriesCommand
 
     @Callback
     @Subcommand("-a")
-    @Permission(permission = "tfm.admin.gamemode.all")
+    @Permission(permission = "tfm.admin.gamemode.others")
     public void changeGamemodeAll(CommandSender sender)
     {
-        Bukkit.getOnlinePlayers().forEach(this::setSurvival);
+        server().getOnlinePlayers().forEach(this::setSurvival);
         adminAction(sender, "<red>Changing everyone's gamemode to survival");
     }
 
@@ -46,14 +46,14 @@ public class Command_gms extends SundriesCommand
         setSurvival(subject);
 
         if (sender.equals(subject))
-        {
             success(sender, "<success>Your gamemode has been set to <highlight>survival</highlight>.");
-        }
         else
         {
             success(sender, "<success>Setting <highlight><subject></highlight>'s gamemode to <highlight>survival</highlight>.",
                     playerName("subject", subject));
-            success(subject, "<success><highlight><sender></highlight> set your gamemode to <highlight>survival</highlight>.",
+            success(subject, plugin().vanish().canSee(subject, sender)
+                            ? "<success><highlight><sender></highlight> set your gamemode to <highlight>survival</highlight>."
+                            : "<success>An admin set your gamemode to <highlight>survival</highlight>.",
                     playerName("sender", sender));
         }
     }

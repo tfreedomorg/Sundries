@@ -1,21 +1,21 @@
 package me.totalfreedom.sundries.cmd;
 
-import me.totalfreedom.api.cmd.SourceType;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
+
 import me.totalfreedom.api.cmd.annotation.Callback;
 import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import me.totalfreedom.api.cmd.SourceType;
 
 @Command(name = "gmsp",
         description = "Quickly change your own gamemode to spectator, or define someone's username to change theirs.",
         usage = "/gmsp <-a | [player]>",
         aliases = {"spectator"}
 )
-@Permission(permission = "tfm.player.survival")
+@Permission(permission = "tfm.player.spectator")
 public class Command_gmsp extends SundriesCommand
 {
     @Callback
@@ -27,10 +27,10 @@ public class Command_gmsp extends SundriesCommand
 
     @Callback
     @Subcommand("-a")
-    @Permission(permission = "tfm.admin.gamemode.all")
+    @Permission(permission = "tfm.admin.gamemode.others")
     public void changeGamemodeAll(CommandSender sender)
     {
-        Bukkit.getOnlinePlayers().forEach(this::setSpectator);
+        server().getOnlinePlayers().forEach(this::setSpectator);
         adminAction(sender, "<red>Changing everyone's gamemode to spectator");
     }
 
@@ -46,14 +46,14 @@ public class Command_gmsp extends SundriesCommand
         setSpectator(subject);
 
         if (sender.equals(subject))
-        {
             success(sender, "<success>Your gamemode has been set to <highlight>spectator</highlight>.");
-        }
         else
         {
             success(sender, "<success>Setting <highlight><subject></highlight>'s gamemode to <highlight>spectator</highlight>.",
                     playerName("subject", subject));
-            success(subject, "<success><highlight><sender></highlight> set your gamemode to <highlight>spectator</highlight>.",
+            success(subject, plugin().vanish().canSee(subject, sender)
+                            ? "<success><highlight><sender></highlight> set your gamemode to <highlight>spectator</highlight>."
+                            : "<success>An admin set your gamemode to <highlight>spectator</highlight>.",
                     playerName("sender", sender));
         }
     }

@@ -1,13 +1,13 @@
 package me.totalfreedom.sundries.cmd;
 
-import me.totalfreedom.api.cmd.SourceType;
-import me.totalfreedom.api.cmd.annotation.*;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
 
-@Command(name = "gmc", description = "Quickly change your own gamemode to creative, or define someone's username to change theirs.", usage = "/gmc <-a | [partialname]>", aliases = {"creative"})
+import me.totalfreedom.api.cmd.annotation.*;
+import me.totalfreedom.api.cmd.SourceType;
+
+@Command(name = "gmc", description = "Quickly change your own gamemode to creative, or define someone's username to change theirs.", usage = "/gmc <-a | [name]>", aliases = {"creative"})
 @Permission(permission = "tfm.player.creative")
 public class Command_gmc extends SundriesCommand
 {
@@ -20,10 +20,10 @@ public class Command_gmc extends SundriesCommand
 
     @Callback
     @Subcommand("-a")
-    @Permission(permission = "tfm.admin.gamemode.all")
+    @Permission(permission = "tfm.admin.gamemode.others")
     public void changeGamemodeAll(CommandSender sender)
     {
-        Bukkit.getOnlinePlayers().forEach(this::setCreative);
+        server().getOnlinePlayers().forEach(this::setCreative);
         adminAction(sender, "<red>Changing everyone's gamemode to creative");
     }
 
@@ -39,14 +39,14 @@ public class Command_gmc extends SundriesCommand
         setCreative(subject);
 
         if (sender.equals(subject))
-        {
             success(sender, "<success>Your gamemode has been set to <highlight>creative</highlight>.");
-        }
         else
         {
             success(sender, "<success>Setting <highlight><subject></highlight>'s gamemode to <highlight>creative</highlight>.",
                     playerName("subject", subject));
-            success(subject, "<success><highlight><sender></highlight> set your gamemode to <highlight>creative</highlight>.",
+            success(subject, plugin().vanish().canSee(subject, sender)
+                            ? "<success><highlight><sender></highlight> set your gamemode to <highlight>creative</highlight>."
+                            : "<success>An admin set your gamemode to <highlight>creative</highlight>.",
                     playerName("sender", sender));
         }
     }

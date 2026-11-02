@@ -1,16 +1,16 @@
 package me.totalfreedom.sundries.cmd;
 
-import me.totalfreedom.api.cmd.SourceType;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
+
 import me.totalfreedom.api.cmd.annotation.Callback;
 import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "gma", description = "Quickly change your own gamemode to adventure, or define someone's username to change theirs.", usage = "/gma [-a | name]", aliases = {"adventure"})
+@Command(name = "gma", description = "Quickly change your own gamemode to adventure, or define someone's username to change theirs.", usage = "/gma <-a | [name]>", aliases = {"adventure"})
 @Permission(permission = "tfm.player.adventure")
 public class Command_gma extends SundriesCommand
 {
@@ -23,10 +23,10 @@ public class Command_gma extends SundriesCommand
 
     @Callback
     @Subcommand("-a")
-    @Permission(permission = "tfm.admin.gamemode.all")
+    @Permission(permission = "tfm.admin.gamemode.others")
     public void changeGamemodeAll(CommandSender sender)
     {
-        Bukkit.getOnlinePlayers().forEach(this::setAdventure);
+        server().getOnlinePlayers().forEach(this::setAdventure);
         adminAction(sender, "<red>Changing everyone's gamemode to adventure");
     }
 
@@ -42,14 +42,14 @@ public class Command_gma extends SundriesCommand
         setAdventure(subject);
 
         if (sender.equals(subject))
-        {
             success(sender, "<success>Your gamemode has been set to <highlight>adventure</highlight>.");
-        }
         else
         {
             success(sender, "<success>Setting <highlight><subject></highlight>'s gamemode to <highlight>adventure</highlight>.",
                     playerName("subject", subject));
-            success(subject, "<success><highlight><sender></highlight> set your gamemode to <highlight>adventure</highlight>.",
+            success(subject, plugin().vanish().canSee(subject, sender)
+                            ? "<success><highlight><sender></highlight> set your gamemode to <highlight>adventure</highlight>."
+                            : "<success>An admin set your gamemode to <highlight>adventure</highlight>.",
                     playerName("sender", sender));
         }
     }

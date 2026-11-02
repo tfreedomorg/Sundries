@@ -1,16 +1,18 @@
 package me.totalfreedom.sundries.cmd;
 
-import me.totalfreedom.api.cmd.SourceType;
-import me.totalfreedom.api.cmd.annotation.*;
-import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Command(name = "gamemode", description = "Choose your own gamemode, or define someone's username to change theirs.", usage = "/gamemode <mode> [-a | name]")
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+
+import org.bukkit.entity.Player;
+import org.bukkit.GameMode;
+
+import me.totalfreedom.api.cmd.annotation.*;
+import me.totalfreedom.api.cmd.SourceType;
+import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
+
+@Command(name = "gamemode", description = "Choose your own gamemode, or define someone's username to change theirs.", usage = "/gamemode <mode> [-a | name]", aliases = {"gm"})
 @Permission(permission = "tfm.player.gamemode")
 public class Command_gamemode extends SundriesCommand
 {
@@ -20,11 +22,6 @@ public class Command_gamemode extends SundriesCommand
             "adventure", "a",
             "spectator", "sp"
     );
-
-    private List<String> matchingGamemodes(String partial)
-    {
-        return FuzzyMatch.filter(GAMEMODES, partial);
-    }
 
     @Completer(value = "", position = 0)
     public List<String> completeFirst(Player sender, String partial)
@@ -81,13 +78,13 @@ public class Command_gamemode extends SundriesCommand
                 return;
             }
 
-            Bukkit.getOnlinePlayers().forEach(player -> setGamemode(player, gamemode));
-
-            adminAction(sender, "<red>Changing everyone's gamemode to " + gamemode.name().toLowerCase());
+            server().getOnlinePlayers().forEach(player -> setGamemode(player, gamemode));
+            adminAction(sender, "<red>Changing everyone's gamemode to <mode>",
+                    Placeholder.unparsed("mode", gamemode.name().toLowerCase()));
             return;
         }
 
-        final Player target = Bukkit.getPlayerExact(targetName);
+        final Player target = server().getPlayerExact(targetName);
         if (target == null)
         {
             sender.sendMessage(PLAYER_NOT_FOUND);
@@ -104,17 +101,22 @@ public class Command_gamemode extends SundriesCommand
         final String modeName = gamemode.name().toLowerCase();
 
         if (sender.equals(target))
-        {
-            success(sender, "<success>Your gamemode has been set to <highlight>" + modeName + "</highlight>.");
-        }
+            success(sender, "<success>Your gamemode has been set to <highlight><mode></highlight>.", Placeholder.unparsed("mode", modeName));
         else
         {
-            success(sender, "<success>Setting <highlight><player></highlight>'s gamemode to <highlight>" + modeName + "</highlight>.",
+            success(sender, "<success>Setting <highlight><player></highlight>'s gamemode to <highlight><mode></highlight>.", Placeholder.unparsed("mode", modeName),
                     playerName("player", target));
 
-            success(target, "<success><highlight><sender></highlight> set your gamemode to <highlight>" + modeName + "</highlight>.",
-                    playerName("sender", sender));
+            success(target, plugin().vanish().canSee(target, sender)
+                            ? "<success><highlight><sender></highlight> set your gamemode to <highlight><mode></highlight>."
+                            : "<success>An admin set your gamemode to <highlight><mode></highlight>.",
+                    playerName("sender", sender), Placeholder.unparsed("mode", modeName));
         }
+    }
+
+    private List<String> matchingGamemodes(String partial)
+    {
+        return FuzzyMatch.filter(GAMEMODES, partial);
     }
 
     private void setGamemode(Player subject, GameMode gamemode)
