@@ -24,3 +24,6 @@ teleport:
     - ocean
     - river
     - warm_ocean
+
+homes:
+  max_per_player: 3
