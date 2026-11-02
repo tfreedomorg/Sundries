@@ -49,7 +49,7 @@ public class Command_sundries extends SundriesCommand
             Visit <highlight>https://github.com/tfreedomorg/Sundries</highlight> for more information.\
             """,
             Placeholder.unparsed("server", ConfigEntry.SERVER_NAME.getString()),
-            Placeholder.unparsed("authors", String.join(", ", sundries().getPluginMeta().getAuthors())),
+            Placeholder.parsed("authors", String.join("</highlight> and <highlight>", sundries().getPluginMeta().getAuthors())),
             Placeholder.unparsed("version", build.formattedVersion()),
             Placeholder.unparsed("date", build.date()),
             Placeholder.unparsed("author", build.author())
