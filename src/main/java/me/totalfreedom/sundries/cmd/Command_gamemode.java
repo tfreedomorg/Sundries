@@ -83,7 +83,7 @@ public class Command_gamemode extends SundriesCommand
 
             Bukkit.getOnlinePlayers().forEach(player -> setGamemode(player, gamemode));
 
-            adminAction(sender, "<red>Changing everyone's gamemode to " + gamemode.name().toLowerCase() + ".");
+            adminAction(sender, "<red>Changing everyone's gamemode to " + gamemode.name().toLowerCase());
             return;
         }
 
