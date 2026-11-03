@@ -1,12 +1,14 @@
 package me.totalfreedom.sundries.cmd;
 
-import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import java.util.List;
+import java.util.Optional;
+
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.Optional;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+
+import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
 public abstract class GamemodeCommand extends SundriesCommand
 {
