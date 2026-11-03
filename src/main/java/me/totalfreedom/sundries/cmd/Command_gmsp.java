@@ -10,7 +10,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
 import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "gmsp", description = "Quickly change your own gamemode to spectator, or define someone's username to change theirs.", usage = "/gmsp <-a | [player]>", aliases = {"spectator"})
+@Command(name = "gmsp", description = "Quickly change your own gamemode to spectator.", usage = "/gmsp <-a | [player]>", aliases = {"spectator"})
 @Permission(permission = "tfm.player.spectator")
 public class Command_gmsp extends GamemodeCommand
 {

@@ -13,11 +13,10 @@ import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
-@Command(name = "gamemode", description = "Choose your own gamemode, or define someone's username to change theirs.", usage = "/gamemode <mode> [-a | player]", aliases = {"gm"})
+@Command(name = "gamemode", description = "Choose your own gamemode.", usage = "/gamemode <mode> [-a | player]", aliases = {"gm"})
 @Permission(permission = "tfm.player.gamemode")
 public class Command_gamemode extends GamemodeCommand
 {
-
     @Completer(value = "", position = 0)
     public List<String> completeFirst(Player sender, String partial)
     {
@@ -30,7 +29,11 @@ public class Command_gamemode extends GamemodeCommand
         if (priorArgs.isEmpty() || parseGamemode(priorArgs.getFirst()).isEmpty() || !isAdmin(sender))
             return List.of();
 
-        return FuzzyMatch.filter(Stream.concat(Stream.of("-a"), visibleNames(sender, partial).stream()).toList(), partial);
+        return Stream.concat(
+                    Stream.of("-a")
+                          .filter(arg -> arg.startsWith(partial)),
+                    visibleNames(sender, partial).stream()
+                ).toList();
     }
 
     @Callback

@@ -10,7 +10,7 @@ import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
 
-@Command(name = "gms", description = "Quickly change your own gamemode to survival, or define someone's username to change theirs.", usage = "/gms <-a | [player]>", aliases = {"survival"})
+@Command(name = "gms", description = "Quickly change your own gamemode to survival.", usage = "/gms <-a | [player]>", aliases = {"survival"})
 @Permission(permission = "tfm.player.survival")
 public class Command_gms extends GamemodeCommand
 {

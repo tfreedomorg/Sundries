@@ -1,5 +1,6 @@
 package me.totalfreedom.sundries.cmd;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.GameMode;
 
@@ -9,7 +10,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
 import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "gma", description = "Quickly change your own gamemode to adventure, or define someone's username to change theirs.", usage = "/gma <-a | [player]>", aliases = {"adventure"})
+@Command(name = "gma", description = "Quickly change your own gamemode to adventure.", usage = "/gma <-a | [player]>", aliases = {"adventure"})
 @Permission(permission = "tfm.player.adventure")
 public class Command_gma extends GamemodeCommand
 {
@@ -23,7 +24,7 @@ public class Command_gma extends GamemodeCommand
     @Callback
     @Subcommand("-a")
     @Permission(permission = "tfm.admin.gamemode.others")
-    public void changeGamemodeAll(Player sender)
+    public void changeGamemodeAll(CommandSender sender)
     {
         server().getOnlinePlayers().forEach(player -> player.setGameMode(GameMode.ADVENTURE));
         adminAction(sender, "<red>Changing everyone's gamemode to adventure");

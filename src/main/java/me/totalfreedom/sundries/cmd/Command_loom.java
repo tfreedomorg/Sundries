@@ -1,13 +1,13 @@
 package me.totalfreedom.sundries.cmd;
 
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.MenuType;
+
 import me.totalfreedom.api.cmd.annotation.Callback;
 import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.annotation.Subcommand;
 import me.totalfreedom.api.cmd.SourceType;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.MenuType;
 
 @Command(name = "loom", description = "Opens up a loom.", usage = "/loom [-a]")
 @Permission(permission = "tfm.player.loom", source = SourceType.ONLY_IN_GAME)

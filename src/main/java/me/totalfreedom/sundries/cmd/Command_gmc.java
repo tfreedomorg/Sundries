@@ -7,7 +7,7 @@ import org.bukkit.GameMode;
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "gmc", description = "Quickly change your own gamemode to creative, or define someone's username to change theirs.", usage = "/gmc <-a | [player]>", aliases = {"creative"})
+@Command(name = "gmc", description = "Quickly change your own gamemode to creative.", usage = "/gmc <-a | [player]>", aliases = {"creative"})
 @Permission(permission = "tfm.player.creative")
 public class Command_gmc extends GamemodeCommand
 {

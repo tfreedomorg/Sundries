@@ -12,7 +12,7 @@ import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
 public abstract class GamemodeCommand extends SundriesCommand
 {
-    protected static final List<String> GAMEMODES = List.of(
+    private static final List<String> GAMEMODES = List.of(
             "creative", "c",
             "survival", "s",
             "adventure", "a",
