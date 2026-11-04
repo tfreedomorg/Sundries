@@ -51,45 +51,6 @@ public abstract class SpeedCommand extends SundriesCommand
     }
 
     /**
-     * Changes a player's current movement speed based on whether they are flying or walking.
-     *
-     * @param sender The player changing the speed.
-     * @param speed The requested speed, from 0 to 10.
-     * @param name The name of the player whose speed is being changed.
-     */
-    protected void changeOtherCurrentSpeed(Player sender, int speed, String name)
-    {
-        final Player target = server().getPlayerExact(name);
-        if (target == null)
-        {
-            sender.sendMessage(PLAYER_NOT_FOUND);
-            return;
-        }
-
-        changeSpeed(sender, target, currentSpeedType(target), speed);
-    }
-
-    /**
-     * Changes a player's walking or flying speed using the specified speed type.
-     *
-     * @param sender The player changing the speed.
-     * @param speed The requested speed, from 0 to 10.
-     * @param type The speed type, either walk or fly.
-     * @param name The name of the player whose speed is being changed.
-     */
-    protected void changeOtherTypeSpeed(Player sender, int speed, String type, String name)
-    {
-        final Player target = server().getPlayerExact(name);
-        if (target == null)
-        {
-            sender.sendMessage(PLAYER_NOT_FOUND);
-            return;
-        }
-
-        changeSpeed(sender, target, type, speed);
-    }
-
-    /**
      * Returns the speed type corresponding to the player's current movement state.
      *
      * @param player The player to check.

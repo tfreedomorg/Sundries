@@ -12,7 +12,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
 @Command(name = "feed", description = "Restores player hunger fully.", usage = "/feed [player]", aliases = {"eat"})
-@Permission(permission = "tfm.player.feed")
+@Permission(permission = "tfm.player.feed", source = SourceType.ONLY_IN_GAME)
 public class Command_feed extends SundriesCommand
 {
     @Completer(value = "", position = 0)
@@ -25,13 +25,9 @@ public class Command_feed extends SundriesCommand
     }
 
     @Callback
-    @Permission(permission = "tfm.player.feed", source = SourceType.ONLY_IN_GAME)
     public void feedSelf(Player sender)
     {
-        sender.setFoodLevel(20);
-        sender.setSaturation(20.0F);
-
-        success(sender, "<success>You are no longer hungry.");
+       feedOthers(sender, sender);
     }
 
     @Callback

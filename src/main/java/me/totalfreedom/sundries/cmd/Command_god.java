@@ -14,7 +14,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
 @Command(name = "god", description = "Toggles god mode.", usage = "/god [player]", aliases = {"godmode", "tgm"})
-@Permission(permission = "tfm.player.god")
+@Permission(permission = "tfm.player.god", source = SourceType.ONLY_IN_GAME)
 public class Command_god extends SundriesCommand
 {
     @Completer(value = "", position = 0)
@@ -27,15 +27,9 @@ public class Command_god extends SundriesCommand
     }
 
     @Callback
-    @Permission(permission = "tfm.player.god", source = SourceType.ONLY_IN_GAME)
     public void changeGodSelf(Player sender)
     {
-        final boolean enabled = !sender.isInvulnerable();
-        sender.setInvulnerable(enabled);
-
-        success(sender, "<success>Set god mode <highlight><god:enabled:disabled></highlight> for <highlight><sender></highlight>.",
-                playerName("sender", sender),
-                Formatter.booleanChoice("god", enabled));
+       changeGodOther(sender, sender);
     }
 
     @Callback
@@ -46,12 +40,12 @@ public class Command_god extends SundriesCommand
         target.setInvulnerable(enabled);
 
         if (sender.equals(target))
-            success(sender, "<success>Set god mode <highlight><god:enabled:disabled></highlight> for <highlight><sender></highlight>.",
+            success(sender, "<success>God mode <highlight><god:enabled:disabled></highlight>.",
                     playerName("sender", sender),
                     Formatter.booleanChoice("god", enabled));
         else
         {
-            success(sender, "<success>Setting <highlight><player></highlight>'s god mode to <highlight><god:enabled:disabled></highlight>.",
+            success(sender, "<success>God mode <highlight><god:enabled:disabled></highlight> for <highlight><player></highlight>.",
                     playerName("player", target),
                     Formatter.booleanChoice("god", enabled));
 

@@ -12,8 +12,8 @@ import me.totalfreedom.api.cmd.annotation.Command;
 import me.totalfreedom.api.cmd.annotation.Completer;
 import me.totalfreedom.api.cmd.annotation.Permission;
 
-@Command(name = "speed", description = "Change your speed limits.", usage = "/speed <speed> [player]", aliases = {"speednt"})
-@Permission(permission = "tfm.player.speed")
+@Command(name = "speed", description = "Change your walk/fly speed.", usage = "/speed <speed> [player]", aliases = {"speednt"})
+@Permission(permission = "tfm.player.speed", source = SourceType.ONLY_IN_GAME)
 public class Command_speed extends SpeedCommand
 {
     @Completer(value = "", position = 0)
@@ -34,7 +34,6 @@ public class Command_speed extends SpeedCommand
     }
 
     @Callback
-    @Permission(permission = "tfm.player.speed", source = SourceType.ONLY_IN_GAME)
     public void changeSpeedSelf(Player sender, int speed)
     {
         changeSpeed(sender, sender, currentSpeedType(sender), speed);
@@ -42,8 +41,8 @@ public class Command_speed extends SpeedCommand
 
     @Callback
     @Permission(permission = "tfm.admin.speed.others")
-    public void changeSpeedOther(Player sender, int speed, String targetName)
+    public void changeSpeedOther(Player sender, int speed, Player target)
     {
-        changeOtherCurrentSpeed(sender, speed, targetName);
+        changeSpeed(sender, target, currentSpeedType(target), speed);
     }
 }

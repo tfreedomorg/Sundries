@@ -14,7 +14,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
 @Command(name = "heal", description = "Restores player health fully.", usage = "/heal [player]")
-@Permission(permission = "tfm.player.heal")
+@Permission(permission = "tfm.player.heal", source = SourceType.ONLY_IN_GAME)
 public class Command_heal extends SundriesCommand
 {
     @Completer(value = "", position = 0)
@@ -27,24 +27,9 @@ public class Command_heal extends SundriesCommand
     }
 
     @Callback
-    @Permission(permission = "tfm.player.heal", source = SourceType.ONLY_IN_GAME)
     public void healSelf(Player sender)
     {
-        final AttributeInstance maxHealth = sender.getAttribute(Attribute.MAX_HEALTH);
-
-        if (maxHealth == null)
-        {
-            msg(sender, "<red>Could not determine your maximum health.");
-            return;
-        }
-
-        sender.setHealth(maxHealth.getValue());
-        sender.setFoodLevel(20);
-        sender.setSaturation(20.0F);
-        sender.setFireTicks(0);
-        sender.clearActivePotionEffects();
-
-        success(sender, "<success>You have been fully healed.");
+       healOthers(sender, sender);
     }
 
     @Callback
@@ -55,7 +40,7 @@ public class Command_heal extends SundriesCommand
 
         if (maxHealth == null)
         {
-            msg(sender, "<red>Could not determine the player's maximum health.");
+            msg(sender, "<red>Could not determine maximum health.");
             return;
         }
 

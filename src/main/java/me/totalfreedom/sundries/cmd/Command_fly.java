@@ -14,7 +14,7 @@ import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
 @Command(name = "fly", description = "Toggles player flight.", usage = "/fly [player]")
-@Permission(permission = "tfm.player.fly")
+@Permission(permission = "tfm.player.fly", source = SourceType.ONLY_IN_GAME)
 public class Command_fly extends SundriesCommand
 {
     @Completer(value = "", position = 0)
@@ -27,15 +27,9 @@ public class Command_fly extends SundriesCommand
     }
 
     @Callback
-    @Permission(permission = "tfm.player.fly", source = SourceType.ONLY_IN_GAME)
     public void changeFlySelf(Player sender)
     {
-        final boolean enabled = !sender.getAllowFlight();
-        sender.setAllowFlight(enabled);
-
-        success(sender, "<success>Set fly mode <highlight><fly:enabled:disabled></highlight> for <highlight><sender></highlight>.",
-                playerName("sender", sender),
-                Formatter.booleanChoice("fly", enabled));
+       changeFlyOther(sender, sender);
     }
 
     @Callback
@@ -46,12 +40,12 @@ public class Command_fly extends SundriesCommand
         target.setAllowFlight(enabled);
 
         if (sender.equals(target))
-            success(sender, "<success>Set fly mode <highlight><fly:enabled:disabled></highlight> for <highlight><sender></highlight>.",
+            success(sender, "<success>Fly mode <highlight><fly:enabled:disabled></highlight>.",
                     playerName("sender", sender),
                     Formatter.booleanChoice("fly", enabled));
         else
         {
-            success(sender, "<success>Setting <highlight><player></highlight>'s fly mode to <highlight><fly:enabled:disabled></highlight>.",
+            success(sender, "<success>Fly mode <highlight><fly:enabled:disabled></highlight> for <highlight><player></highlight>.",
                     playerName("player", target),
                     Formatter.booleanChoice("fly", enabled));
 
