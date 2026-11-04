@@ -41,7 +41,6 @@ public class Command_fly extends SundriesCommand
 
         if (sender.equals(target))
             success(sender, "<success>Fly mode <highlight><fly:enabled:disabled></highlight>.",
-                    playerName("sender", sender),
                     Formatter.booleanChoice("fly", enabled));
         else
         {

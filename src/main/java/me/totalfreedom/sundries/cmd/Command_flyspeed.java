@@ -12,7 +12,7 @@ import me.totalfreedom.api.cmd.annotation.Completer;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "flyspeed", description = "Change your fly speed limits.", usage = "/flyspeed <speed> [player]", aliases = {"fspeed"})
+@Command(name = "flyspeed", description = "Change your fly speed.", usage = "/flyspeed <speed> [player]", aliases = {"fspeed"})
 @Permission(permission = "tfm.player.speed", source = SourceType.ONLY_IN_GAME)
 public class Command_flyspeed extends SpeedCommand
 {

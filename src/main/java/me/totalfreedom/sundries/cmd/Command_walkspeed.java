@@ -12,7 +12,7 @@ import me.totalfreedom.api.cmd.annotation.Completer;
 import me.totalfreedom.api.cmd.annotation.Permission;
 import me.totalfreedom.api.cmd.SourceType;
 
-@Command(name = "walkspeed", description = "Change your walk speed limits.", usage = "/walkspeed <speed> [player]", aliases = {"wspeed"})
+@Command(name = "walkspeed", description = "Change your walk speed.", usage = "/walkspeed <speed> [player]", aliases = {"wspeed"})
 @Permission(permission = "tfm.player.speed", source = SourceType.ONLY_IN_GAME)
 public class Command_walkspeed extends SpeedCommand
 {

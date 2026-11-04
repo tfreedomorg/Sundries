@@ -41,7 +41,6 @@ public class Command_god extends SundriesCommand
 
         if (sender.equals(target))
             success(sender, "<success>God mode <highlight><god:enabled:disabled></highlight>.",
-                    playerName("sender", sender),
                     Formatter.booleanChoice("god", enabled));
         else
         {
