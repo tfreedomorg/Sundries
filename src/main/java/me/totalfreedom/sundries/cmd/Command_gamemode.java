@@ -11,7 +11,6 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 import me.totalfreedom.api.cmd.annotation.*;
 import me.totalfreedom.api.cmd.SourceType;
-import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
 
 @Command(name = "gamemode", description = "Choose your own gamemode.", usage = "/gamemode <mode> [-a | player]", aliases = {"gm"})
 @Permission(permission = "tfm.player.gamemode")
