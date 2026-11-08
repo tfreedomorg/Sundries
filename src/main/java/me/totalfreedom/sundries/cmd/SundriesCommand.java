@@ -1,7 +1,9 @@
 package me.totalfreedom.sundries.cmd;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,6 +54,18 @@ public abstract class SundriesCommand extends FCommand
     protected TagResolver playerName(String key, Player player)
     {
         return Placeholder.component(key, Component.text(player.getName()).color(teamColor(player).orElse(null)));
+    }
+
+    /**
+     * A tag listing the names, to be wrapped in {@code <highlight>}. The commas take the surrounding
+     * color because we are professionals here. Only pass names limited to letters,
+     * numbers, _, and -, like homes and warps, because the list is parsed.
+     */
+    protected TagResolver nameList(String key, Collection<String> names)
+    {
+        return Placeholder.parsed(key, names.stream()
+                                            .sorted()
+                                            .collect(Collectors.joining("</highlight>, <highlight>")));
     }
 
     protected final Sundries sundries()

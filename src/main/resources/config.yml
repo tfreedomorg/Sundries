@@ -27,3 +27,6 @@ teleport:
 
 homes:
   max_per_player: 3
+
+warps:
+  max_per_player: 5

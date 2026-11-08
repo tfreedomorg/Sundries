@@ -39,7 +39,7 @@ public class Command_homes extends HomeCommand
 
             success(sender, "<highlight><owner></highlight><success>'s homes: <highlight><homes></highlight>",
                     Placeholder.unparsed("owner", owner.getUsername()),
-                    homeList(found.keySet()));
+                    nameList("homes", found.keySet()));
         }));
     }
 }

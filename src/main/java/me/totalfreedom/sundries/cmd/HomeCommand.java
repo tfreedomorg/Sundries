@@ -1,16 +1,11 @@
 package me.totalfreedom.sundries.cmd;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import me.totalfreedom.totalfreedommod.player.PlayerData;
 
 import org.bukkit.entity.Player;
-
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 
 import me.totalfreedom.sundries.home.HomeService;
 import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
@@ -76,18 +71,6 @@ public abstract class HomeCommand extends SundriesCommand
             return;
         }
 
-        success(sender, "<success>Your homes: <highlight><homes></highlight>", homeList(names));
-    }
-
-    /**
-     * A {@code <homes>} tag listing the names, to be wrapped in {@code <highlight>}. The commas
-     * take the surrounding color because we are professionals here. Parsing is safe because
-     * /sethome only allows letters, numbers, _, and -.
-     */
-    protected TagResolver homeList(Collection<String> names)
-    {
-        return Placeholder.parsed("homes", names.stream()
-                                                .sorted()
-                                                .collect(Collectors.joining("</highlight>, <highlight>")));
+        success(sender, "<success>Your homes: <highlight><homes></highlight>", nameList("homes", names));
     }
 }

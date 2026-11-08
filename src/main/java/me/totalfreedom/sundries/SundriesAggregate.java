@@ -14,6 +14,7 @@ import me.totalfreedom.sundries.sql.SundriesDatabase;
 import me.totalfreedom.sundries.teleport.TeleportService;
 import me.totalfreedom.sundries.teleport.TeleportRequestService;
 import me.totalfreedom.sundries.util.FLog;
+import me.totalfreedom.sundries.warp.WarpService;
 import me.totalfreedom.totalfreedommod.framework.ServiceManager;
 
 public class SundriesAggregate
@@ -43,6 +44,7 @@ public class SundriesAggregate
         services.register(RandomTeleportService.class, api -> new RandomTeleportService(api, config, teleports));
         services.register(TeleportRequestService.class, api -> new TeleportRequestService(api, config));
         services.register(HomeService.class, api -> new HomeService(api, config, database));
+        services.register(WarpService.class, api -> new WarpService(api, database));
         services.register(CommandLoader.class, CommandLoader::new);
 
         services.start();

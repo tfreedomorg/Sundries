@@ -13,7 +13,8 @@ public enum ConfigEntry
     TELEPORT_RANDOM_MAX_ATTEMPTS("teleport.random_max_attempts"),
     TELEPORT_RANDOM_COOLDOWN_SECONDS("teleport.random_cooldown_seconds"),
     TELEPORT_RANDOM_EXCLUDED_BIOMES("teleport.random_excluded_biomes"),
-    HOMES_MAX_PER_PLAYER("homes.max_per_player");
+    HOMES_MAX_PER_PLAYER("homes.max_per_player"),
+    WARPS_MAX_PER_PLAYER("warps.max_per_player");
 
     private final String path;
 
