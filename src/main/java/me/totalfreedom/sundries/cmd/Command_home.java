@@ -10,6 +10,7 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
+import me.totalfreedom.sundries.home.Home;
 import me.totalfreedom.sundries.teleport.StoredLocation;
 import me.totalfreedom.sundries.teleport.TeleportService;
 import me.totalfreedom.totalfreedommod.player.PlayerData;
@@ -67,7 +68,8 @@ public class Command_home extends HomeCommand
                 return;
             }
 
-            final Optional<Location> destination = found.flatMap(StoredLocation::toLocation);
+            final Optional<Location> destination = found.map(Home::location)
+                                                        .flatMap(StoredLocation::toLocation);
 
             if (destination.isEmpty())
             {
@@ -82,7 +84,7 @@ public class Command_home extends HomeCommand
                         if (teleported)
                             success(sender, message,
                                     Placeholder.unparsed("owner", owner.getUsername()),
-                                    Placeholder.unparsed("home", home.toLowerCase()));
+                                    Placeholder.unparsed("home", found.get().name()));
                         else
                             msg(sender, "<red>Could not teleport to that home.");
                       });

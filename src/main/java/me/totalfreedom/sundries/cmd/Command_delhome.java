@@ -45,10 +45,10 @@ public class Command_delhome extends HomeCommand
     {
         homes().deleteHome(owner.getUuid(), home, deleted ->
         {
-            if (deleted)
+            if (deleted.isPresent())
                 success(sender, message,
                         Placeholder.unparsed("owner", owner.getUsername()),
-                        Placeholder.unparsed("home", home.toLowerCase()));
+                        Placeholder.unparsed("home", deleted.get().name()));
             else
                 msg(sender, "<red>No home found with that name.");
         });

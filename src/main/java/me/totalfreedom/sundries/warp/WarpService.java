@@ -43,7 +43,7 @@ public class WarpService extends FreedomService
 
         // putIfAbsent, because a warp set while this loads is newer than the stored row
         plugin.database().readAsync("Sundries/loadWarps", repository.loadWarps(),
-                loaded -> loaded.forEach(warps::putIfAbsent),
+                loaded -> loaded.forEach(warp -> warps.putIfAbsent(normalize(warp.name()), warp)),
                 () -> {});
     }
 
@@ -61,9 +61,10 @@ public class WarpService extends FreedomService
 
     public List<String> getWarpNames()
     {
-        return warps.keySet()
+        return warps.values()
                     .stream()
-                    .sorted()
+                    .map(Warp::name)
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
                     .toList();
     }
 
@@ -78,20 +79,20 @@ public class WarpService extends FreedomService
                     .stream()
                     .filter(warp -> warp.creator().equals(creator))
                     .map(Warp::name)
-                    .sorted()
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
                     .toList();
     }
 
     /**
      * Saves a warp at {@code location}. Moving an existing warp keeps its original creator, so
-     * an admin moving it doesn't take it over.
+     * an admin moving it doesn't take it over, but takes the case {@code name} was typed in.
      */
     public void setWarp(String name, UUID creator, Location location)
     {
         final String key = normalize(name);
         final UUID owner = getWarp(key).map(Warp::creator)
                                        .orElse(creator);
-        final Warp warp = new Warp(key, owner, StoredLocation.of(location));
+        final Warp warp = new Warp(name, owner, StoredLocation.of(location));
 
         warps.put(key, warp);
         enqueue(repository.saveWarp(warp), key);
@@ -102,7 +103,7 @@ public class WarpService extends FreedomService
         final String key = normalize(name);
 
         if (warps.remove(key) != null)
-            enqueue(repository.deleteWarp(key), key);
+            enqueue(repository.deleteWarp(name), key);
     }
 
     private void enqueue(Mono<Void> write, String name)

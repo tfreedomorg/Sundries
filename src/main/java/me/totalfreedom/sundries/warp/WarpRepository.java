@@ -25,7 +25,7 @@ public class WarpRepository
         {
             statement.execute("""
                     CREATE TABLE IF NOT EXISTS warp (
-                        name TEXT NOT NULL PRIMARY KEY,
+                        name TEXT NOT NULL COLLATE NOCASE PRIMARY KEY,
                         creator TEXT NOT NULL,
                         world TEXT NOT NULL,
                         x REAL NOT NULL,
@@ -37,24 +37,21 @@ public class WarpRepository
         }
     }
 
-    public Mono<Map<String, Warp>> loadWarps()
+    public Mono<List<Warp>> loadWarps()
     {
         return Mono.fromCallable(() ->
         {
-            final Map<String, Warp> warps = new HashMap<>();
+            final List<Warp> warps = new ArrayList<>();
 
             try (Connection connection = database.borrowConnection();
                  Statement statement = connection.createStatement();
                  ResultSet results = statement.executeQuery("SELECT * FROM warp"))
             {
                 while (results.next())
-                {
-                    final String name = results.getString("name");
-                    warps.put(name, new Warp(name, UUID.fromString(results.getString("creator")),
+                    warps.add(new Warp(results.getString("name"), UUID.fromString(results.getString("creator")),
                             new StoredLocation(results.getString("world"),
                                     results.getDouble("x"), results.getDouble("y"), results.getDouble("z"),
                                     results.getFloat("yaw"), results.getFloat("pitch"))));
-                }
             }
 
             return warps;

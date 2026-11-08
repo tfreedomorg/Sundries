@@ -64,7 +64,7 @@ public abstract class SundriesCommand extends FCommand
     protected TagResolver nameList(String key, Collection<String> names)
     {
         return Placeholder.parsed(key, names.stream()
-                                            .sorted()
+                                            .sorted(String.CASE_INSENSITIVE_ORDER)
                                             .collect(Collectors.joining("</highlight>, <highlight>")));
     }
 

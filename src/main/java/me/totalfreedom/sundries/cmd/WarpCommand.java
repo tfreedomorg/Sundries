@@ -32,7 +32,7 @@ public abstract class WarpCommand extends SundriesCommand
                                         .stream()
                                         .filter(warp -> canChange(sender, warp, othersPermission))
                                         .map(Warp::name)
-                                        .sorted()
+                                        .sorted(String.CASE_INSENSITIVE_ORDER)
                                         .toList(),
                 partial);
     }

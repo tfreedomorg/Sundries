@@ -9,6 +9,8 @@ import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import me.totalfreedom.api.cmd.SourceType;
 import me.totalfreedom.api.cmd.annotation.*;
 
+import me.totalfreedom.sundries.home.Home;
+
 @Command(name = "homes", description = "List your homes.", usage = "/homes [player]")
 @Permission(permission = "tfm.player.homes", source = SourceType.ONLY_IN_GAME)
 public class Command_homes extends HomeCommand
@@ -39,7 +41,9 @@ public class Command_homes extends HomeCommand
 
             success(sender, "<highlight><owner></highlight><success>'s homes: <highlight><homes></highlight>",
                     Placeholder.unparsed("owner", owner.getUsername()),
-                    nameList("homes", found.keySet()));
+                    nameList("homes", found.stream()
+                                           .map(Home::name)
+                                           .toList()));
         }));
     }
 }

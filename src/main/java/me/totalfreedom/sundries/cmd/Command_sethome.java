@@ -47,6 +47,6 @@ public class Command_sethome extends HomeCommand
         }
 
         success(sender, "<success>Set home <highlight><home></highlight>.",
-                Placeholder.unparsed("home", name.toLowerCase()));
+                Placeholder.unparsed("home", name));
     }
 }

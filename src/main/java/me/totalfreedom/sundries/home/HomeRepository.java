@@ -26,7 +26,7 @@ public class HomeRepository
             statement.execute("""
                     CREATE TABLE IF NOT EXISTS home (
                         uuid TEXT NOT NULL,
-                        name TEXT NOT NULL,
+                        name TEXT NOT NULL COLLATE NOCASE,
                         world TEXT NOT NULL,
                         x REAL NOT NULL,
                         y REAL NOT NULL,
@@ -38,11 +38,11 @@ public class HomeRepository
         }
     }
 
-    public Mono<Map<String, StoredLocation>> loadHomes(UUID uuid)
+    public Mono<List<Home>> loadHomes(UUID uuid)
     {
         return Mono.fromCallable(() ->
         {
-            final Map<String, StoredLocation> homes = new HashMap<>();
+            final List<Home> homes = new ArrayList<>();
 
             try (Connection connection = database.borrowConnection();
                  PreparedStatement statement = connection.prepareStatement("SELECT * FROM home WHERE uuid = ?"))
@@ -52,9 +52,9 @@ public class HomeRepository
                 try (ResultSet results = statement.executeQuery())
                 {
                     while (results.next())
-                        homes.put(results.getString("name"), new StoredLocation(results.getString("world"),
+                        homes.add(new Home(results.getString("name"), new StoredLocation(results.getString("world"),
                                 results.getDouble("x"), results.getDouble("y"), results.getDouble("z"),
-                                results.getFloat("yaw"), results.getFloat("pitch")));
+                                results.getFloat("yaw"), results.getFloat("pitch"))));
                 }
             }
 
@@ -62,7 +62,7 @@ public class HomeRepository
         }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    public Mono<Void> saveHome(UUID uuid, String name, StoredLocation location)
+    public Mono<Void> saveHome(UUID uuid, Home home)
     {
         return Mono.<Void>fromCallable(() ->
         {
@@ -71,13 +71,13 @@ public class HomeRepository
                         "INSERT OR REPLACE INTO home (uuid, name, world, x, y, z, yaw, pitch) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"))
             {
                 statement.setString(1, uuid.toString());
-                statement.setString(2, name);
-                statement.setString(3, location.world());
-                statement.setDouble(4, location.x());
-                statement.setDouble(5, location.y());
-                statement.setDouble(6, location.z());
-                statement.setFloat(7, location.yaw());
-                statement.setFloat(8, location.pitch());
+                statement.setString(2, home.name());
+                statement.setString(3, home.location().world());
+                statement.setDouble(4, home.location().x());
+                statement.setDouble(5, home.location().y());
+                statement.setDouble(6, home.location().z());
+                statement.setFloat(7, home.location().yaw());
+                statement.setFloat(8, home.location().pitch());
                 statement.executeUpdate();
             }
             return null;

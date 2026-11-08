@@ -49,6 +49,6 @@ public class Command_setwarp extends WarpCommand
 
         warps().setWarp(name, sender.getUniqueId(), sender.getLocation());
         success(sender, "<success>Set warp <highlight><warp></highlight>.",
-                Placeholder.unparsed("warp", name.toLowerCase()));
+                Placeholder.unparsed("warp", name));
     }
 }

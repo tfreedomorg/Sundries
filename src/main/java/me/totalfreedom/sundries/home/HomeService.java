@@ -27,7 +27,7 @@ public class HomeService extends FreedomService
     private final MainConfig config;
     private final HomeRepository repository;
     private final PersistenceQueue writes = new PersistenceQueue("home");
-    private final Map<UUID, Map<String, StoredLocation>> homes = new HashMap<>();
+    private final Map<UUID, Map<String, Home>> homes = new HashMap<>();
 
     public HomeService(FreedomAPI plugin, MainConfig config, SundriesDatabase database)
     {
@@ -62,9 +62,10 @@ public class HomeService extends FreedomService
     public List<String> getHomeNames(UUID uuid)
     {
         return homes.getOrDefault(uuid, Map.of())
-                    .keySet()
+                    .values()
                     .stream()
-                    .sorted()
+                    .map(Home::name)
+                    .sorted(String.CASE_INSENSITIVE_ORDER)
                     .toList();
     }
 
@@ -72,63 +73,62 @@ public class HomeService extends FreedomService
      * Looks up {@code uuid}'s homes, then hands them to {@code callback} on the main thread. An
      * online player's come from memory and anyone else's from the database.
      */
-    public void findHomes(UUID uuid, Consumer<Map<String, StoredLocation>> callback)
+    public void findHomes(UUID uuid, Consumer<List<Home>> callback)
     {
-        final Map<String, StoredLocation> loaded = homes.get(uuid);
+        final Map<String, Home> loaded = homes.get(uuid);
 
         if (loaded != null)
         {
-            callback.accept(Map.copyOf(loaded));
+            callback.accept(List.copyOf(loaded.values()));
             return;
         }
 
         plugin.database().readAsync("Sundries/findHomes", repository.loadHomes(uuid), callback,
-                () -> callback.accept(Map.of()));
+                () -> callback.accept(List.of()));
     }
 
-    public void findHome(UUID uuid, String name, Consumer<Optional<StoredLocation>> callback)
+    public void findHome(UUID uuid, String name, Consumer<Optional<Home>> callback)
     {
-        findHomes(uuid, found -> callback.accept(Optional.ofNullable(found.get(normalize(name)))));
+        findHomes(uuid, found -> callback.accept(found.stream()
+                                                      .filter(home -> home.name().equalsIgnoreCase(name))
+                                                      .findFirst()));
     }
 
     /**
-     * Saves a home, replacing any with the same name.
+     * Saves a home, replacing any with the same name in any case. The new one keeps the case
+     * {@code name} was typed in.
      * 
      * @return False if this would be a new home and {@code uuid} is already at the limit.
      */
     public boolean setHome(UUID uuid, String name, Location location)
     {
         final String key = normalize(name);
-        final Map<String, StoredLocation> playerHomes = homes.computeIfAbsent(uuid, ignored -> new HashMap<>());
+        final Map<String, Home> playerHomes = homes.computeIfAbsent(uuid, ignored -> new HashMap<>());
 
         if (!playerHomes.containsKey(key) && playerHomes.size() >= config.getInteger(ConfigEntry.HOMES_MAX_PER_PLAYER))
             return false;
 
-        final StoredLocation stored = StoredLocation.of(location);
-        playerHomes.put(key, stored);
-        enqueue(repository.saveHome(uuid, key, stored), uuid);
+        final Home home = new Home(name, StoredLocation.of(location));
+        playerHomes.put(key, home);
+        enqueue(repository.saveHome(uuid, home), uuid);
         return true;
     }
 
     /**
-     * Deletes a home, then tells {@code callback} on the main thread whether {@code uuid} had one
-     * with that name.
+     * Deletes a home, then hands {@code callback} the deleted home on the main thread, or empty if
+     * {@code uuid} had none with that name.
      */
-    public void deleteHome(UUID uuid, String name, Consumer<Boolean> callback)
+    public void deleteHome(UUID uuid, String name, Consumer<Optional<Home>> callback)
     {
-        final String key = normalize(name);
-
-        findHomes(uuid, found ->
+        findHome(uuid, name, found ->
         {
-            if (!found.containsKey(key))
+            found.ifPresent(home ->
             {
-                callback.accept(false);
-                return;
-            }
+                homes.getOrDefault(uuid, new HashMap<>()).remove(normalize(name));
+                enqueue(repository.deleteHome(uuid, home.name()), uuid);
+            });
 
-            homes.getOrDefault(uuid, new HashMap<>()).remove(key);
-            enqueue(repository.deleteHome(uuid, key), uuid);
-            callback.accept(true);
+            callback.accept(found);
         });
     }
 
@@ -153,8 +153,8 @@ public class HomeService extends FreedomService
                     if (server.getPlayer(uuid) == null)
                         return;
 
-                    final Map<String, StoredLocation> playerHomes = homes.computeIfAbsent(uuid, ignored -> new HashMap<>());
-                    loaded.forEach(playerHomes::putIfAbsent);
+                    final Map<String, Home> playerHomes = homes.computeIfAbsent(uuid, ignored -> new HashMap<>());
+                    loaded.forEach(home -> playerHomes.putIfAbsent(normalize(home.name()), home));
                 },
                 () -> {});
     }
