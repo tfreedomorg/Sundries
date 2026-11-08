@@ -43,7 +43,7 @@ public class Command_setwarp extends WarpCommand
         {
             msg(sender, "<red>You've reached the limit of <max> warps. Delete one with /delwarp or reuse one of their names: <warps>",
                 Placeholder.unparsed("max", String.valueOf(max)),
-                nameList("warps", owned));
+                Placeholder.unparsed("warps", String.join(", ", owned)));
             return;
         }
 
