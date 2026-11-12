@@ -3,12 +3,12 @@ package me.totalfreedom.sundries.cmd;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
-import me.totalfreedom.totalfreedommod.player.PlayerData;
 
 import org.bukkit.entity.Player;
 
 import me.totalfreedom.sundries.home.HomeService;
 import me.totalfreedom.totalfreedommod.cmd.internal.FuzzyMatch;
+import me.totalfreedom.totalfreedommod.player.PlayerData;
 
 public abstract class HomeCommand extends SundriesCommand
 {

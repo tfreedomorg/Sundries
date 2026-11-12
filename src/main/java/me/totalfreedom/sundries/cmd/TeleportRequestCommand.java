@@ -3,6 +3,7 @@ package me.totalfreedom.sundries.cmd;
 import org.bukkit.entity.Player;
 
 import me.totalfreedom.sundries.teleport.TeleportRequestService;
+
 public abstract class TeleportRequestCommand extends SundriesCommand
 {
     /**
